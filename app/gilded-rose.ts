@@ -17,52 +17,62 @@ export class GildedRose {
         this.items = items;
     }
 
+    MAX_QUALITY = 50;
+    MIN_QUALITY = 0;
+
+    isLessThanMaximum(quality: number) {
+        return quality < this.MAX_QUALITY;
+    }
+
+    isOverMinimum(quality: number) {
+        return quality > this.MIN_QUALITY;
+    }
+
+    increaseQuality(quality: number) {
+        return this.isLessThanMaximum(quality) ? quality + 1 : quality;
+    }
+
+    decreaseQuality(quality: number) {
+        return this.isOverMinimum(quality) ? quality - 1 : quality;
+    }
+
+    increaseQualityConcert(item : Item) {
+        let quality = this.increaseQuality(item.quality);
+        quality = item.sellIn < 11 ? this.increaseQuality(quality) : quality;
+        quality = item.sellIn < 6 ? this.increaseQuality(quality) : quality;
+        return quality;
+    }
+
     updateQuality() {
-        for (let i = 0; i < this.items.length; i++) {
-            if (this.items[i].name != 'Aged Brie' && this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
-                if (this.items[i].quality > 0) {
-                    if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-                        this.items[i].quality = this.items[i].quality - 1
-                    }
+        this.items.forEach(currItem => {
+            if (currItem.name === 'Aged Brie') {
+                currItem.sellIn -= 1;
+                currItem.quality = this.increaseQuality(currItem.quality);
+                currItem.quality = currItem.sellIn < 0 ? this.increaseQuality(currItem.quality) : currItem.quality;
+            } else if (currItem.name === 'Sulfuras, Hand of Ragnaros') {
+                currItem.quality = 80
+            } else if (currItem.name === 'Backstage passes to a TAFKAL80ETC concert') {
+                currItem.quality = currItem.sellIn < 0 ? 0 : this.increaseQualityConcert(currItem);
+                currItem.sellIn -= 1;
+                if (currItem.sellIn < 0) {
+                    currItem.quality = 0;
+                }
+            } else if (currItem.name === 'Conjured Mana Cake') {
+                currItem.sellIn -= 1;
+                currItem.quality = this.decreaseQuality(currItem.quality);
+                currItem.quality = this.decreaseQuality(currItem.quality);
+                if (currItem.sellIn < 0) {
+                    currItem.quality = this.decreaseQuality(currItem.quality);
+                    currItem.quality = this.decreaseQuality(currItem.quality);
                 }
             } else {
-                if (this.items[i].quality < 50) {
-                    this.items[i].quality = this.items[i].quality + 1
-                    if (this.items[i].name == 'Backstage passes to a TAFKAL80ETC concert') {
-                        if (this.items[i].sellIn < 11) {
-                            if (this.items[i].quality < 50) {
-                                this.items[i].quality = this.items[i].quality + 1
-                            }
-                        }
-                        if (this.items[i].sellIn < 6) {
-                            if (this.items[i].quality < 50) {
-                                this.items[i].quality = this.items[i].quality + 1
-                            }
-                        }
-                    }
+                currItem.sellIn -= 1;
+                currItem.quality = this.decreaseQuality(currItem.quality);
+                if (currItem.sellIn < 0) {
+                    currItem.quality = this.decreaseQuality(currItem.quality);
                 }
             }
-            if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-                this.items[i].sellIn = this.items[i].sellIn - 1;
-            }
-            if (this.items[i].sellIn < 0) {
-                if (this.items[i].name != 'Aged Brie') {
-                    if (this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
-                        if (this.items[i].quality > 0) {
-                            if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-                                this.items[i].quality = this.items[i].quality - 1
-                            }
-                        }
-                    } else {
-                        this.items[i].quality = this.items[i].quality - this.items[i].quality
-                    }
-                } else {
-                    if (this.items[i].quality < 50) {
-                        this.items[i].quality = this.items[i].quality + 1
-                    }
-                }
-            }
-        }
+        })
 
         return this.items;
     }
