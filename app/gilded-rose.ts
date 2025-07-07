@@ -52,12 +52,25 @@ export class GildedRose {
             } else if (currItem.name === 'Sulfuras, Hand of Ragnaros') {
                 currItem.quality = 80
             } else if (currItem.name === 'Backstage passes to a TAFKAL80ETC concert') {
+                currItem.quality = currItem.sellIn < 0 ? 0 : this.increaseQualityConcert(currItem);
                 currItem.sellIn -= 1;
-                currItem.quality = currItem.sellIn === 0 ? 0 : this.increaseQualityConcert(currItem);
+                if (currItem.sellIn < 0) {
+                    currItem.quality = 0;
+                }
             } else if (currItem.name === 'Conjured Mana Cake') {
-
+                currItem.sellIn -= 1;
+                currItem.quality = this.decreaseQuality(currItem.quality);
+                currItem.quality = this.decreaseQuality(currItem.quality);
+                if (currItem.sellIn < 0) {
+                    currItem.quality = this.decreaseQuality(currItem.quality);
+                    currItem.quality = this.decreaseQuality(currItem.quality);
+                }
             } else {
-
+                currItem.sellIn -= 1;
+                currItem.quality = this.decreaseQuality(currItem.quality);
+                if (currItem.sellIn < 0) {
+                    currItem.quality = this.decreaseQuality(currItem.quality);
+                }
             }
         })
 

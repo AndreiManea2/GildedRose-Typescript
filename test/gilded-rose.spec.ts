@@ -103,7 +103,7 @@ describe('conjured mana cake quality rules', function () {
         expect(items[0].sellIn).to.equal(1);
     });
 
-    it('quality should go down x24 as fast for sellIn 0 days', function() {
+    it('quality should go down x4 as fast for sellIn 0 days', function() {
        const gildedRose = new GildedRose([new Item('Conjured Mana Cake', 0, 4)]);
        const items = gildedRose.updateQuality();
        expect(items[0].quality).to.equal(0);
